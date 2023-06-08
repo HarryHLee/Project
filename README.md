@@ -1,4 +1,4 @@
-# Project Black Jack
+# Black Jack
 # This is where my little private Black Jack Program has been borned.
 # This Black Jack game contains concepts of Discreted, Data Structures and more in C++.
 # Published Date: 6/7/23
