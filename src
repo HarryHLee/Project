@@ -1,1 +1,308 @@
 
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/cppFiles/main.cc to edit this template
+ */
+
+/* 
+ * File:   main.cpp
+ * Author: harry
+ *
+ * Created on April 25, 2023, 9:03 PM
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <ctime>
+#include <iterator>
+#include <list>
+#include <deque>
+#include <bits/stdc++.h>
+
+// AVL Tree Data Structure
+struct avl {
+   int d;
+   struct avl *l;
+   struct avl *r;
+}*r;
+
+// AVL Tree Class
+class avl_tree {
+   public:
+      int height(avl *);
+      int difference(avl *);
+      avl *rr_rotat(avl *);
+      avl *ll_rotat(avl *);
+      avl *lr_rotat(avl*);
+      avl *rl_rotat(avl *);
+      avl * balance(avl *);
+      avl * insert(avl*, int);
+      void show(avl*, int);
+      void inorder(avl *);
+      void preorder(avl *);
+      void postorder(avl*);
+      avl_tree() {
+         r = NULL;
+      }
+};
+
+// Function to calculate the height of a node
+int avl_tree::height(avl *t) {
+   int h = 0;
+   if (t != NULL) {
+      int l_height = height(t->l);
+      int r_height = height(t->r);
+      int max_height = max(l_height, r_height);
+      h = max_height + 1;
+   }
+   return h;
+}
+
+// Function to calculate the difference in height between the left and right subtree of a node
+int avl_tree::difference(avl *t) {
+   int l_height = height(t->l);
+   int r_height = height(t->r);
+   int b_factor = l_height - r_height;
+   return b_factor;
+}
+
+// Right-Right Rotation
+avl *avl_tree::rr_rotat(avl *parent) {
+   avl *t;
+   t = parent->r;
+   parent->r = t->l;
+   t->l = parent;
+   cout << "Right-Right Rotation";
+   return t;
+}
+
+// Left-Left Rotation
+avl *avl_tree::ll_rotat(avl *parent) {
+   avl *t;
+   t = parent->l;
+   parent->l = t->r;
+   t->r = parent;
+   cout << "Left-Left Rotation";
+   return t;
+}
+
+// Left-Right Rotation
+avl *avl_tree::lr_rotat(avl *parent) {
+   avl *t;
+   t = parent->l;
+   parent->l = rr_rotat(t);
+   cout << "Left-Right Rotation";
+   return ll_rotat(parent);
+}
+
+// Right-Left Rotation
+avl *avl_tree::rl_rotat(avl *parent) {
+   avl *t;
+   t = parent->r;
+   parent->r = ll_rotat(t);
+   cout << "Right-Left Rotation";
+   return rr_rotat(parent);
+}
+
+// Balancing the AVL tree
+avl *avl_tree::balance(avl *t) {
+   int bal_factor = difference(t);
+   if (bal_factor > 1) {
+      if (difference(t->l) > 0)
+         t = ll_rotat(t);
+      else
+         t = lr_rotat(t);
+   } else if (bal_factor < -1) {
+      if (difference(t->r) > 0)
+         t = rl_rotat(t);
+      else
+         t = rr_rotat(t);
+   }
+   return t;
+}
+
+// Inserting a node into the AVL tree
+avl *avl_tree::insert(avl *r, int v) {
+   if (r == NULL) {
+      r = new avl;
+      r->d = v;
+      r->l = NULL;
+      r->r = NULL;
+      return r;
+   } else if (v< r->d) {
+      r->l = insert(r->l, v);
+      r = balance(r);
+   } else if (v >= r->d) {
+      r->r = insert(r->r, v);
+      r = balance(r);
+   }
+   return r;
+}
+
+// Displaying the AVL tree
+void avl_tree::show(avl *p, int l) {
+   int i;
+   if (p != NULL) {
+      show(p->r, l + 1);
+      cout << endl;
+      if (p == r)
+         cout << "Root -> ";
+      for (i = 0; i < l && p != r; i++)
+         cout << "        ";
+      cout << p->d;
+      show(p->l, l + 1);
+   }
+}
+
+// Inorder traversal of the AVL tree
+void avl_tree::inorder(avl *t) {
+   if (t == NULL)
+      return;
+   inorder(t->l);
+   cout << t->d << " ";
+   inorder(t->r);
+}
+
+// Preorder traversal of the AVL tree
+void avl_tree::preorder(avl *t) {
+   if (t == NULL)
+      return;
+   cout << t->d << " ";
+   preorder(t->l);
+   preorder(t->r);
+}
+
+// Postorder traversal of the AVL tree
+void avl_tree::postorder(avl *t) {
+   if (t == NULL)
+      return;
+   postorder(t->l);
+   postorder(t->r);
+   cout << t->d << " ";
+}
+
+// Blackjack Game Functions
+int card_value(int);
+int dealer_draw_card();
+int player_draw_card();
+void display_cards(int[], int, int);
+
+// Function to calculate the value of a card
+int card_value(int card) {
+   if (card >= 11 && card <= 13) {
+      return 10;
+   } else {
+      return card;
+   }
+}
+
+// Function for the dealer to draw a card
+int dealer_draw_card() {
+   int card = rand() % 13 + 1;
+   return card_value(card);
+}
+
+// Function for the player to draw a card
+int player_draw_card() {
+   int card = rand() % 13 + 1;
+   return card_value(card);
+}
+
+// Function to display the cards of the player and dealer
+void display_cards(int player_cards[], int dealer_cards[], int num_player_cards) {
+   cout << "Player Cards: ";
+   for (int i = 0; i < num_player_cards; i++) {
+      cout << player_cards[i] << " ";
+   }
+   cout << endl;
+   cout << "Dealer Cards: ";
+   for (int i = 0; i < 2; i++) {
+      cout << dealer_cards[i] << " ";
+   }
+   cout << "??";
+   cout << endl;
+}
+
+// Main function
+int main() {
+   string player_name;
+   cout << "Enter your name: ";
+   cin >> player_name;
+   cout << "Welcome, " << player_name << "!" << endl;
+   cout << "Let's play a game of blackjack." << endl;
+   cout << "---------------------------------" << endl;
+   cout << "Rules: " << endl;
+   cout << "- The goal is to get as close to 21 without going over." << endl;
+   cout << "- Numbered cards are worth their face value." << endl;
+   cout << "- Face cards (Jack, Queen, King) are worth 10." << endl;
+   cout << "- Ace can be worth 1 or 11, whichever is more favorable." << endl;
+   cout << "---------------------------------" << endl;
+   cout << "Do you want to play? (Y/N): ";
+   char choice;
+   cin >> choice;
+   if (choice == 'N' || choice == 'n') {
+      cout << "Maybe next time. Goodbye, " << player_name << "!" << endl;
+      return 0;
+   }
+   cout << "Let's start the game!" << endl;
+   int player_cards[10];
+   int dealer_cards[10];
+   int num_player_cards = 0;
+   int num_dealer_cards = 0;
+   int player_score = 0;
+   int dealer_score = 0;
+   bool game_over = false;
+   while (!game_over) {
+      int player_card = player_draw_card();
+      player_cards[num_player_cards] = player_card;
+      num_player_cards++;
+      player_score += player_card;
+      display_cards(player_cards, dealer_cards, num_player_cards);
+      if (player_score > 21) {
+         cout << "Bust! You went over 21. You lose." << endl;
+         game_over = true;
+         break;
+      }
+      cout << "Do you want to draw another card? (Y/N): ";
+      char draw_choice;
+      cin >> draw_choice;
+      if (draw_choice == 'N' || draw_choice == 'n') {
+         game_over = true;
+         break;
+      }
+      int dealer_card = dealer_draw_card();
+      dealer_cards[num_dealer_cards] = dealer_card;
+      num_dealer_cards++;
+      dealer_score += dealer_card;
+      if (dealer_score > 21) {
+         cout << "Dealer Busts! You win." << endl;
+         game_over = true;
+         break;
+      }
+      if (dealer_score >= 17) {
+         game_over = true;
+      }
+   }
+   if (!game_over) {
+      cout << "Dealer cards: ";
+      for (int i = 0; i < num_dealer_cards; i++) {
+         cout << dealer_cards[i] << " ";
+      }
+      cout << endl;
+      cout << "Player score: " << player_score << endl;
+      cout << "Dealer score: " << dealer_score << endl;
+      if (player_score > dealer_score) {
+         cout << "Congratulations! You win." << endl;
+      } else if (player_score < dealer_score) {
+         cout << "Dealer wins." << endl;
+      } else {
+         cout << "It's a tie." << endl;
+      }
+   }
+   cout << "---------------------------------" << endl;
+   cout << "Thank you for playing, " << player_name << "!" << endl;
+   return 0;
+}
+
+
